@@ -1,171 +1,163 @@
-import {file_explorer} from "./file_explorer.js";
-import {editor_adapter} from "./editor_adapter.js";
-import {apiservice} from "./api_service.js";
-import {terminaladapter} from "./terminal_adapter.js";
-import {refreshLayout} from "./layout_manager.js";
-import {apiService} from "./api_service.js"
-
+import { TerminalAdapter } from './terminal_adapter.js';
+import { MonacoEditorAdapter } from './editor_adapter.js';
+import { FileExplorer } from './file_explorer.js';
 
 class AppController {
     constructor() {
         this.state = {
-            ultimaAnaliseIA:"",
-            arquivoAbertoAtual: null
-        }
-  this.fileExplorer = new file_explorer('file-tree',
- this.handleFileSelect.bind(this));
+            ultimaAnaliseIA: "",
+            arquivoAbertoAtual: null,
+            sanityLevel: 100
+        };
 
-this.editorAdapter = new editor_adapter('editor');
-this.apiService = new apiservice();
-
-this.terminalAdapter = new terminaladapter( 'terminal',
-    document.getElementById("terminal"));
-
-this.editorReady = this.initEditor();
-    
+        this.terminal = null;
+        this.editor = null;
 
         this.bindEvents();
-        this.switchTab(this.terminalAdapter);
-        this.handleTerminalCommand(command);
-        this.handleFileSelect = this.handleFileSelect(filepath);
-        this.editorReady = this.initEditor();
     }
 
-   bindEvents() {
-    document.getElementById('tab-terminal')
-            .addEventListener('click', () => this.switchTab('terminal'));
- 
-        document.getElementById('tab-editor')
-            .addEventListener('click', () => this.switchTab('editor'));
- 
-        document.getElementById('save-btn')
-            .addEventListener('click', () => this.salvarArquivo());
- 
-        document.getElementById('analyze-btn')
-            .addEventListener('click', () => this.auditarCodigoAtual());
- 
-        document.getElementById('export-btn')
-            .addEventListener('click', () => this.exportarLaudo());
+    async init() {
+        this.terminal = new TerminalAdapter('terminal-container', (comando) => {
+            this.handleTerminalCommand(comando);
+        });
+        this.terminal.printLine("[SYSTEM] Torre de Controlo Instância 42 inicializada.");
+        this.terminal.printPrompt();
 
-        };
-    
+        this.editor = new MonacoEditorAdapter('editor-container');
+        const codigoInicial = `# Neuro Audit - Espaço de Trabalho em Branco\n# Aguardando a seleção de um ficheiro no explorador...`;
+        await this.editor.initialize(codigoInicial, 'python');
 
- switchTab(tab) {
-      const terminal = document.getElementById('terminal');
-      const editor = document.getElementById('editor');
-      const explorer = document.getElementById('file-tree');
+        await FileExplorer.loadFiles();
+    }
 
-
-     if (tab === 'terminal') {
-            terminalPane.classList.remove('hidden');
-            editorPane.classList.add('hidden');
-        } else {
-            terminalPane.classList.add('hidden');
-            editorPane.classList.remove('hidden');
-           
-            this.editorAdapter.refreshLayout();
+    bindEvents() {
+        const btnAudit = document.getElementById('btn-audit');
+        if (btnAudit) {
+            btnAudit.addEventListener('click', () => this.auditarCodigoDeTeste());
         }
-    }
-    
 
+        const btnOpenFolder = document.getElementById('btn-open-folder');
+        if (btnOpenFolder) {
+            btnOpenFolder.addEventListener('click', () => this.selecionarDiretorioAlvo());
+        }
 
-
- async   handleTerminalCommand(command) {
-        ApiService.post('/commands', { command });
-    if (command = terminalCommand) {
-        console.log('Terminal command received:', command.data);
-      if (command = analysis) {
-        state.ultimaAnaliseIA = command.data;
-
-      
-    }
-}
- }
-
-async handleFileSelect(filepath) {
-    const imageExtensions = ['.png', '.jpg', '.jpeg', '.gif', '.bmp'];
-    const extension = '.' + filepath.split('.').pop().toLowerCase();
-    const domEditor = document.getElementById('editor-container');
-    const domViewer = document.getElementById('viewer-container');
-
-
-    if (imageExtensions.includes(extension)) {
-        domEditor.classList.add('hidden');
-        domViewer.classList.remove('hidden');
-
-this.state.arquivoAbertoAtual = filepath;
-    const nomeArquivo = filepath.split('/').pop();
-    document.getElementById('current-file-name').innerText = `Arquivo: ${nomeArquivo}`;
-
-       const img = document.getElementById('image-viewer');
-         if (img) img.src = filepath;
-        } else { 
-            domViewer.classList.add('hidden');
-            domEditor.classList.remove('hidden');
-
-    }
-
- try { await this.editorReady;
-                const response = await this.apiService.readFile(filepath);
-                if (response.success) {
-                    this.editorAdapter.setContent(response.data);
-                }
-            } catch (error) {
-                console.error('Erro ao abrir arquivo:', error);
+        const tabs = ['tab-explorer', 'tab-vcs', 'tab-analytics'];
+        tabs.forEach(tabId => {
+            const el = document.getElementById(tabId);
+            if (el) {
+                el.addEventListener('click', () => this.switchSidebarTab(tabId));
             }
- 
-            this.switchTab('editor');
+        });
+    }
+
+    switchSidebarTab(activeId) {
+        ['tab-explorer', 'tab-vcs', 'tab-analytics'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.classList.remove('bg-brand-highlight', 'text-black', 'font-bold');
+                el.classList.add('text-gray-400');
+            }
+        });
+
+        const activeEl = document.getElementById(activeId);
+        if (activeEl) {
+            activeEl.classList.remove('text-gray-400');
+            activeEl.classList.add('bg-brand-highlight', 'text-black', 'font-bold');
         }
-    
-        
+    }
 
+    async handleTerminalCommand(comando) {
+        if (!comando.trim()) {
+            this.terminal.printPrompt();
+            return;
+        }
 
-    async initEditor() {
+        this.terminal.printLine(`\r\n[MATRIZ] A processar comando: ${comando}...`);
+
         try {
-            return Promise.resolve("NeuroAudit Iniciado");
+            const response = await fetch("http://127.0.0.1:5000/command", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ command: comando })
+            });
+
+            if (!response.ok) throw new Error(`Falha HTTP`);
+
+            const data = await response.json();
+
+            let saida = "";
+            if (typeof data === "string") {
+                saida = data;
+            } else if (data && typeof data === "object") {
+                saida = data.output || data.analysis || data.resultado || data.message || JSON.stringify(data, null, 2);
+            }
+
+            if (saida) {
+                this.terminal.printLine(saida.replace(/\n/g, "\r\n"));
+            } else {
+                this.terminal.printLine("[AVISO] Comando executado, mas o Python não retornou output visível.");
+            }
 
         } catch (error) {
-            console.error('Error initializing editor:', error);
+            this.terminal.printLine(`[ERRO] Falha de comunicação com o Backend.`);
         }
 
+        this.terminal.printPrompt();
     }
 
-    async salvarArquivo(){
-         if (!this.state.arquivoAbertoAtual) {
-            this.terminalAdapter.print('Nenhum arquivo aberto para salvar.');
-            return;
-        }
-    
- const content = this.editorAdapter.getContent();
-        await this.apiService.saveFile(this.state.arquivoAbertoAtual, content);
-        this.terminalAdapter.print(`Arquivo salvo: ${this.state.arquivoAbertoAtual}`);}
+    async selecionarDiretorioAlvo() {
+        this.terminal.printLine("\r\n[SYSTEM] A invocar o sistema operativo nativo...");
 
-    async auditarCodigoAtual(){
-     
-            const content = this.editorAdapter.getContent();
-            switchTab('terminal');
-           this.terminalAdapter.print('Auditando código...');
-            const response = await this.apiService.auditCode(content);
-            if (response.success) {
-                this.state.ultimaAnaliseIA = response.data;
-                this.terminalAdapter.print(response.data);
-        } else {
-            this.terminalAdapter.print('Erro na auditoria: ' + response.error);
-        }
-                ;
+        try {
+            const response = await fetch("http://127.0.0.1:5000/selecionar-pasta", {
+                method: 'GET'
+            });
+
+            if (!response.ok) throw new Error(`Falha HTTP: ${response.status}`);
+
+            const data = await response.json();
+
+            if (data.status === "sucesso") {
+                this.terminal.printLine(`[OK] Workspace montado: ${data.pasta}`);
+
+                await FileExplorer.loadFiles(data.pasta);
+
+            } else if (data.status === "cancelado") {
+                this.terminal.printLine("[AVISO] O utilizador cancelou a seleção.");
+            } else {
+                this.terminal.printLine(`[ERRO] Não foi possível mapear o diretório.`);
             }
-        
 
-        async exportarLaudo(){
-         if (!this.state.ultimaAnaliseIA) {
-            this.terminalAdapter.print('Nenhuma análise disponível para exportar. Execute a auditoria primeiro.');
-            return;
+            this.terminal.printPrompt();
+
+        } catch (error) {
+            this.terminal.printLine(`\r\n[ERRO CRÍTICO] Falha de ligação à API: ${error.message}`);
+            this.terminal.printPrompt();
+        }
     }
-     const result = await this.apiService.exportData(this.state.ultimaAnaliseIA);
-        this.terminalAdapter.print(`Laudo exportado: ${result.filename || 'laudo.pdf'}`);}
 
-   
+    async auditarCodigoDeTeste() {
+        this.terminal.printLine("\r\n[PROCESSANDO] Matriz Neural S.A.R.A ativada...");
+        this.reduzirSanidadeVisual(15);
+        this.terminal.printLine("[INFO] Auditoria requer ficheiro carregado no editor.");
+        this.terminal.printPrompt();
+    }
+
+    reduzirSanidadeVisual(dano) {
+        this.state.sanityLevel = Math.max(0, this.state.sanityLevel - dano);
+        const bar = document.getElementById('sanity-progress-bar');
+        const valueText = document.getElementById('sanity-value');
+        valueText.textContent = `${this.state.sanityLevel}%`;
+        bar.style.width = `${this.state.sanityLevel}%`;
+
+        if(this.state.sanityLevel <= 50) {
+            bar.classList.replace('bg-brand-neon', 'bg-red-500');
+            valueText.classList.replace('text-brand-neon', 'text-red-500');
+        }
+    }
 }
-document.addEventListener('DOMContentLoaded', () => {
+
+document.addEventListener('DOMContentLoaded', async () => {
     window.app = new AppController();
+    await window.app.init();
 });

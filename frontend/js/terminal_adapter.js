@@ -1,12 +1,10 @@
-import { Terminal } from '@xterm/xterm';
-import { TerminalAdapter } from './terminal_adapter.js';
 export class TerminalAdapter {
     constructor(divId, enterCallBack) {
-        this.terminal = new Terminal({
-            theme: {
-                background: '#000000',
-                foreground: '#39FF14'
-            }
+        this.terminal = new window.Terminal({
+            theme: { background: '#0a0a0a', foreground: '#39FF14' },
+            fontFamily: 'JetBrains Mono, monospace',
+            fontSize: 13,
+            cursorBlink: true
         });
 
         this.terminal.open(document.getElementById(divId));
@@ -15,12 +13,11 @@ export class TerminalAdapter {
 
         this.terminal.onData((tecla) => {
             if (tecla === '\r') {
-                this.terminal.write('\r\n');
                 if (typeof this.onEnterCallback === 'function') {
                     this.onEnterCallback(this.comandoAtual);
                 }
                 this.comandoAtual = "";
-            } else if (tecla === '\x7f') {
+            } else if (tecla === '\x7f') { // Backspace
                 if (this.comandoAtual.length > 0) {
                     this.comandoAtual = this.comandoAtual.slice(0, -1);
                     this.terminal.write('\b \b');
@@ -32,6 +29,10 @@ export class TerminalAdapter {
         });
     }
 
+    printPrompt() {
+        this.terminal.write('\r\nuser@neuro-audit:~$ ');
+    }
+
     print(texto){
         this.terminal.write(texto);
     }
@@ -39,8 +40,4 @@ export class TerminalAdapter {
     printLine(texto){
         this.terminal.write(texto + '\r\n');
     }
-
-    printPrompt(){
-        this.terminal.write('$ ');
-    } 
 }

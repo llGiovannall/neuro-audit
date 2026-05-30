@@ -1,62 +1,144 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
+<!DOCTYPE html><html class="dark" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Neuro Audit</title>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Neuro Audit IDE - Explorer</title>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.css" />
     <script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.js"></script>
-    <link rel="stylesheet" href="css/styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.44.0/min/vs/loader.js"></script>
+
+    <script id="tailwind-config">
+    tailwind.config = {
+        darkMode: "class",
+        theme: {
+            extend: {
+                fontFamily: {
+                    mono: ['JetBrains Mono', 'monospace'],
+                },
+                colors: {
+                    'brand-bg': '#0a0a0a',
+                    'brand-border': '#222222',
+                    'brand-sidebar': '#131313',
+                    'brand-activity': '#0e0e0e',
+                    'brand-highlight': '#d4f1d4',
+                    'brand-neon': '#39ff14',
+                }
+            }
+        }
+    }
+    </script>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        .neon-glow { box-shadow: 0 0 10px rgba(57, 255, 20, 0.5); }
+    </style>
 </head>
-<body>
-    <div id="ui-container" class="app-container">
-        <header class="header-main">
-            <div class="logo-area">
-                <h1><a><img src="./assets/logo.webp" style="width: 26px; height: 26px;"></a> NEURO AUDIT - CODE 42</h1>
-
-                <button id="btn-pasta" class="btn">[ SELECIONAR DIRETÓRIO ]</button>
+<body class="flex flex-col h-screen w-screen font-mono bg-brand-bg text-white antialiased">
+    <header class="h-12 flex justify-between items-center px-4 z-50 bg-brand-bg border-b border-brand-border shrink-0">
+        <div class="flex items-center gap-4 w-[260px]">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-brand-activity flex items-center justify-center border border-brand-border">
+                    <span class="material-symbols-outlined text-white text-[20px]">memory</span>
+                </div>
+                <div>
+                    <h1 class="text-[14px] font-bold tracking-tighter text-white leading-none">NEURO AUDIT_v1.0</h1>
+                    <p class="text-[11px] text-gray-500 mt-1">KERNEL_v42.0</p>
+                </div>
             </div>
-            <span id="pasta-atual" class="text-right">Nenhum repositório conectado.</span>
-        </header>
-
-        <nav id="tabs-container" class="tabs">
-            <button id="tab-terminal" class="tab active-tab">[ TERMINAL FORENSE ]</button>
-            <button id="tab-editor" class="tab inactive-tab">[ AUDITORIA DE CÓDIGO ]</button>
-        </nav>
-
-        <main id="view-terminal" class="view-panel">
-            <div id="terminal-container" class="terminal-box"></div>
-        </main>
-
-        <main id="view-editor" class="view-panel hidden">
-            <aside id="file-explorer" class="explorer-box">
-                <div class="explorer-header">EXPLORADOR DE ARQUIVOS</div>
-                <div id="file-tree" class="file-tree">
-                    <div class="text-muted">Nenhum diretório conectado.</div>
+        </div>
+        <div class="flex-1 flex justify-center items-center">
+            <span class="text-[12px] text-gray-300 uppercase tracking-widest">WORKSPACE</span>
+        </div>
+        <div class="flex items-center gap-6 text-[13px] text-white">
+            <div class="flex items-center gap-2">
+                <span class="text-gray-400 text-[11px] uppercase tracking-widest">SANITY LEVEL</span>
+                <div class="w-32 h-2 bg-brand-border rounded-none overflow-hidden flex items-center border border-brand-border">
+                    <div class="h-full bg-brand-neon w-[85%]"></div>
                 </div>
-            </aside>
+                <span class="text-brand-neon">85%</span>
+            </div>
+            <button class="border border-brand-neon px-4 py-1 text-brand-neon bg-transparent hover:bg-brand-neon hover:text-black transition-all uppercase tracking-wider text-[12px] rounded-none neon-glow font-bold">
+                [ AUDIT ]
+            </button>
+        </div>
+    </header>
 
-            <section class="editor-area">
-                <header class="editor-toolbar">
-                    <span id="current-file-name" class="file-title">Nenhum arquivo aberto</span>
-                    <div class="toolbar-actions">
-                        <button id="btn-auditar-codigo" class="btn btn-magenta">[ AUDITAR CÓDIGO]</button>
-                        <button id="btn-salvar-codigo" class="btn btn-green">[ SALVAR ]</button>
+    <div class="flex flex-1 overflow-hidden">
+        <aside class="w-[50px] bg-brand-activity border-r border-brand-border flex flex-col items-center py-4 z-40 shrink-0">
+            <nav class="flex-1 flex flex-col items-center space-y-4">
+                <a class="text-brand-neon cursor-pointer relative group flex justify-center w-full" href="#">
+                    <div class="absolute left-0 top-0 bottom-0 w-[2px] bg-brand-neon"></div>
+                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">folder_open</span>
+                </a>
+                <a class="text-gray-500 hover:text-white cursor-pointer transition-colors w-full flex justify-center" href="#">
+                    <span class="material-symbols-outlined">account_tree</span>
+                </a>
+                <a class="text-gray-500 hover:text-white cursor-pointer transition-colors w-full flex justify-center" href="#">
+                    <span class="material-symbols-outlined">terminal</span>
+                </a>
+                <a class="text-gray-500 hover:text-white cursor-pointer transition-colors w-full flex justify-center" href="#">
+                    <span class="material-symbols-outlined">analytics</span>
+                </a>
+            </nav>
+            <div class="mt-auto pb-2 flex justify-center w-full">
+                <a class="text-gray-500 hover:text-white cursor-pointer transition-colors" href="#">
+                    <span class="material-symbols-outlined">settings</span>
+                </a>
+            </div>
+        </aside>
+
+        <aside id="sidebar-explorer" class="w-[250px] bg-brand-sidebar border-r border-brand-border flex flex-col z-30 shrink-0">
+
+            <div class="py-2 px-4 border-b border-brand-border flex justify-between items-center">
+                <span class="text-[11px] text-gray-500 uppercase tracking-widest font-bold">EXPLORER</span>
+
+                <button id="btn-open-folder" class="text-gray-400 hover:text-brand-neon transition-colors focus:outline-none" title="Selecionar Diretório">
+                    <span class="material-symbols-outlined text-[16px]">create_new_folder</span>
+                </button>
+            </div>
+
+            <nav class="flex-1 overflow-y-auto custom-scrollbar py-2">
+                <div id="file-tree-container" class="px-2">
                     </div>
-                </header>
+            </nav>
+        </aside>
 
-                <div id="editor-container" class="editor-box"></div>
-                <div id="image-viewer-container" class="image-viewer-box hidden">
-                    <img id="image-preview" src="" alt="Visualização de Mídia" />
-                </div>
-            </section>
-        </main>
-
-        <footer id="footer-actions" class="footer">
-            <button id="btn-download" class="btn btn-blue hidden">[ EXPORTAR PDF ]</button>
-        </footer>
+        <div class="flex-1 flex flex-col relative bg-brand-bg rounded-none min-w-0">
+            <main class="flex-1 flex flex-col relative z-0 overflow-hidden rounded-none">
+                <section class="flex-1 flex flex-col min-h-0 bg-brand-bg">
+                    <div class="flex bg-brand-sidebar border-b border-brand-border h-8 items-end px-1 gap-1"></div>
+                    <div id="editor-container" class="flex-1 bg-brand-bg overflow-hidden relative"></div>
+                </section>
+            </main>
+        </div>
     </div>
 
-    <script type="module" src="js/main.js?v=2"></script>
+    <section class="h-[240px] bg-brand-sidebar flex flex-col relative border-t border-brand-border rounded-none w-full shrink-0">
+        <div class="h-8 border-b border-brand-border flex items-center px-4 justify-between bg-brand-activity">
+            <span class="text-[11px] text-gray-400 uppercase tracking-widest font-bold">CONSOLE</span>
+        </div>
+
+        <div class="flex-1 overflow-hidden relative rounded-none flex flex-col">
+            <div id="terminal-container" class="w-full h-full p-2 pl-4"></div>
+
+            <div class="absolute bottom-4 right-4 bg-brand-activity p-2 flex items-center gap-3 rounded-none border border-brand-border pointer-events-none z-10">
+                <div class="flex flex-col">
+                    <span class="text-[11px] text-gray-500">SYSTEM STATUS</span>
+                    <span class="text-[12px] text-gray-300">CPU Load: 42%</span>
+                </div>
+                <div class="flex gap-[2px] h-4">
+                    <div class="w-2 h-full bg-[#d4f1d4]"></div><div class="w-2 h-full bg-[#d4f1d4]"></div><div class="w-2 h-full bg-[#d4f1d4]"></div><div class="w-2 h-full bg-[#d4f1d4]"></div><div class="w-2 h-full bg-brand-border"></div><div class="w-2 h-full bg-brand-border"></div><div class="w-2 h-full bg-brand-border"></div><div class="w-2 h-full bg-brand-border"></div><div class="w-2 h-full bg-brand-border"></div><div class="w-2 h-full bg-brand-border"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script type="module" src="js/main.js"></script>
 </body>
 </html>

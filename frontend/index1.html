@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Neuro Audit</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.css" />
+    <script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.js"></script>
+    <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+    <div id="ui-container" class="app-container">
+        <header class="header-main">
+            <div class="logo-area">
+                <h1><a><img src="./assets/logo.webp" style="width: 26px; height: 26px;"></a> NEURO AUDIT - CODE 42</h1>
+
+                <button id="btn-pasta" class="btn">[ SELECIONAR DIRETÓRIO ]</button>
+            </div>
+            <span id="pasta-atual" class="text-right">Nenhum repositório conectado.</span>
+        </header>
+
+        <nav id="tabs-container" class="tabs">
+            <button id="tab-terminal" class="tab active-tab">[ TERMINAL FORENSE ]</button>
+            <button id="tab-editor" class="tab inactive-tab">[ AUDITORIA DE CÓDIGO ]</button>
+        </nav>
+
+        <main id="view-terminal" class="view-panel">
+            <div id="terminal-container" class="terminal-box"></div>
+        </main>
+
+        <main id="view-editor" class="view-panel hidden">
+            <aside id="file-explorer" class="explorer-box">
+                <div class="explorer-header">EXPLORADOR DE ARQUIVOS</div>
+                <div id="file-tree" class="file-tree">
+                    <div class="text-muted">Nenhum diretório conectado.</div>
+                </div>
+            </aside>
+
+            <section class="editor-area">
+                <header class="editor-toolbar">
+                    <span id="current-file-name" class="file-title">Nenhum arquivo aberto</span>
+                    <div class="toolbar-actions">
+                        <button id="btn-auditar-codigo" class="btn btn-magenta">[ AUDITAR CÓDIGO]</button>
+                        <button id="btn-salvar-codigo" class="btn btn-green">[ SALVAR ]</button>
+                    </div>
+                </header>
+
+                <div id="editor-container" class="editor-box"></div>
+                <div id="image-viewer-container" class="image-viewer-box hidden">
+                    <img id="image-preview" src="" alt="Visualização de Mídia" />
+                </div>
+            </section>
+        </main>
+
+        <footer id="footer-actions" class="footer">
+            <button id="btn-download" class="btn btn-blue hidden">[ EXPORTAR PDF ]</button>
+        </footer>
+    </div>
+
+    <script type="module" src="js/main.js?v=2"></script>
+</body>
+</html>

@@ -1,5 +1,5 @@
 <div align="center">
-  <h1>🤖 NEURO AUDIT</h1>
+  <h1><a><img src="./frontend/assets/logo.webp" style="width: 26px; height: 26px;"></a> NEURO AUDIT - CODE 42</h1>
   <h3>Departamento de Sanidade Cibernética & Auditoria de Código</h3>
 
   <p>
@@ -10,7 +10,9 @@
   <p>
     <img alt="Python" src="https://img.shields.io/badge/Python-3.11+-14354C?style=for-the-badge&logo=python&logoColor=white">
     <img alt="Flask" src="https://img.shields.io/badge/Flask-HTTP_Microserver-000000?style=for-the-badge&logo=flask&logoColor=white">
-    <img alt="JavaScript" src="https://img.shields.io/badge/JavaScript-ES6_Modules-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black">
+    <img alt="JavaScript" src="https://img.shields.io/badge/JavaScript-ES6_Modules-F7DF1E?style=for-the-badge&logo=javascript&logoColor=yellow">
+  </p>
+  <p>
     <img alt="React" src="https://img.shields.io/badge/React-UI_Dashboard-20232A?style=for-the-badge&logo=react&logoColor=61DAFB">
     <img alt="SQLite" src="https://img.shields.io/badge/SQLite-Local_Storage-003B57?style=for-the-badge&logo=sqlite&logoColor=white">
     <img alt="Gemini" src="https://img.shields.io/badge/Gemini_2.5_Flash-AI_Core-8E75B2?style=for-the-badge&logo=googlebard&logoColor=white">

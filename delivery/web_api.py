@@ -1,3 +1,4 @@
+import os
 import datetime
 from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
@@ -69,6 +70,54 @@ def create_app(
     def ler_arquivo():
         caminho = request.json.get("caminho")
         return jsonify(file_use_case.read_file(caminho))
+
+    @app.route("/criar-item", methods=["POST"])
+    def criar_item():
+        dados = request.json
+        caminho = dados.get("caminho")
+        is_dir = dados.get("is_dir", False)
+
+        if not caminho:
+            return (
+                jsonify({"status": "erro", "mensagem": "Caminho não fornecido."}),
+                400,
+            )
+
+        try:
+            import os
+
+            if is_dir:
+                os.makedirs(caminho, exist_ok=True)
+            else:
+                open(caminho, "a").close()
+
+            return jsonify({"status": "sucesso"})
+        except Exception as e:
+            return jsonify({"status": "erro", "mensagem": str(e)}), 500
+
+    @app.route("/deletar-item", methods=["DELETE"])
+    def deletar_item():
+        """Rota tática para eliminar ficheiros e pastas a partir do Frontend"""
+        caminho = request.json.get("caminho")
+
+        if not caminho:
+            return (
+                jsonify({"status": "erro", "mensagem": "Caminho não fornecido."}),
+                400,
+            )
+
+        try:
+            import os
+            import shutil
+
+            if os.path.isdir(caminho):
+                shutil.rmtree(caminho)  # Remove a pasta e tudo lá dentro
+            else:
+                os.remove(caminho)  # Remove apenas o ficheiro
+
+            return jsonify({"status": "sucesso"})
+        except Exception as e:
+            return jsonify({"status": "erro", "mensagem": str(e)}), 500
 
     @app.route("/salvar-arquivo-editor", methods=["POST"])
     def salvar_arquivo_editor():

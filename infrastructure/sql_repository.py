@@ -18,19 +18,18 @@ class SqliteAuditRepository(IAuditRepository):
             ReportPath varchar(255) NULL,
             CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
         ); 
-
         """
         with sqlite3.connect(self.db_path) as conn:
             conn.executescript(query_criacao_tabelas)
 
     def save_audit_log(
-        self, author_name: str, sanity_score: int, diagnostic: str
+        self, author_name: str, email: str, sanity_score: int, report_path: str
     ) -> None:
         
         query_insert = "INSERT INTO Users (Name,Email,Sanity,ReportPath)values (?,?,?,?)"  # Preencha aqui
 
         with sqlite3.connect(self.db_path) as conn:
-            conn.execute(query_insert, (author_name, sanity_score, diagnostic))
+            conn.execute(query_insert, (author_name, email, sanity_score, report_path))
             conn.commit()
 
     def get_history_by_author(self, author_name: str) -> list:

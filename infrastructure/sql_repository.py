@@ -8,13 +8,17 @@ class SqliteAuditRepository(IAuditRepository):
         self._initialize_database()
 
     def _initialize_database(self):
-        """
-        JOÃO: Aqui você escreve o SQL puro para criar as tabelas e as Triggers.
-        O Python vai executar isso automaticamente quando o app abrir.
-        """
+       
         query_criacao_tabelas = """
-            -- Escreva aqui o CREATE TABLE dos devs e dos laudos
-            -- Escreva aqui sua CREATE TRIGGER para calcular a sanidade
+          CREATE TABLE IF NOT EXISTS Users (
+            Id INTEGER PRIMARY KEY AUTOINCREMENT,
+            Name TEXT NOT NULL,
+            Email VARCHAR(255) NOT NULL UNIQUE,
+            Sanity REAL NOT NULL DEFAULT 100.0,
+            ReportPath varchar(255) NULL,
+            CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
+        ); 
+
         """
         with sqlite3.connect(self.db_path) as conn:
             conn.executescript(query_criacao_tabelas)
@@ -22,10 +26,8 @@ class SqliteAuditRepository(IAuditRepository):
     def save_audit_log(
         self, author_name: str, sanity_score: int, diagnostic: str
     ) -> None:
-        """
-        JOÃO: Aqui você escreve o comando INSERT. A Trigger fará o resto.
-        """
-        query_insert = "INSERT INTO..."  # Preencha aqui
+        
+        query_insert = "INSERT INTO Users (Name,Email,Sanity,ReportPath)values (?,?,?,?)"  # Preencha aqui
 
         with sqlite3.connect(self.db_path) as conn:
             conn.execute(query_insert, (author_name, sanity_score, diagnostic))

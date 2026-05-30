@@ -21,6 +21,21 @@ class ExecuteTerminalCommandUseCase:
         self.session = session
 
     def execute(self, raw_command: str) -> dict:
+        cmd_trim = raw_command.strip()
+
+        if cmd_trim.lower() == "help":
+            help_text = (
+                "Spectra OS Terminal - Comandos Autorizados:\r\n"
+                "  help  -> Exibe esta matriz de suporte\r\n"
+                "  git   -> Comandos nativos (ex: git status)\r\n"
+                "\r\nAtalhos Táticos (Aliases):\r\n"
+                "  gs    -> git status\r\n"
+                "  ga    -> git add .\r\n"
+                "  gcm   -> git commit -m\r\n"
+                "  gpo   -> git push origin\r\n"
+            )
+            return {"output": help_text, "analysis": None}
+
         if not self.session.is_connected():
             return {
                 "output": "ERRO: O terminal requer conexão com um diretório alvo.\r\n",
@@ -29,7 +44,8 @@ class ExecuteTerminalCommandUseCase:
 
         final_command = self._parse_command(raw_command)
         result = self.git.execute_command(final_command, self.session.get_directory())
-        terminal_output = result.get("stdout", "") + result.get("stderr", "")
+
+        terminal_output = result.get("output", "Comando executado silenciosamente.")
 
         return {"output": terminal_output.replace("\n", "\r\n"), "analysis": None}
 
@@ -64,7 +80,7 @@ class FileManagementUseCase:
         if not target.startswith(self.session.get_directory()):
             return {
                 "status": "erro",
-                "mensagem": "Acesso negado pela Diretriz 42. Permissão de leitura revogada.",
+                "mensagem": "Acesso negado pela Diretriz 42.",
             }
 
         try:
@@ -78,7 +94,7 @@ class FileManagementUseCase:
         ):
             return {"status": "erro", "mensagem": "Acesso negado."}
         try:
-            return {"status": "sucesso", "conteudo": self.fs.read_file(filepath)}
+            return self.fs.read_file(filepath)
         except Exception as e:
             return {"status": "erro", "mensagem": str(e)}
 
@@ -88,7 +104,6 @@ class FileManagementUseCase:
         ):
             return {"status": "erro", "mensagem": "Acesso negado."}
         try:
-            self.fs.write_file(filepath, content)
-            return {"status": "sucesso"}
+            return self.fs.write_file(filepath, content)
         except Exception as e:
             return {"status": "erro", "mensagem": str(e)}

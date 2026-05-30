@@ -1,10 +1,10 @@
-class ApiService{
+export class ApiService{
 
-    
+
     async static get() {
         try{
             const url = await fetch(endpoint)
-            
+
             const data = await url.json();
 
             return data;
@@ -12,7 +12,7 @@ class ApiService{
             console.log('Ocorreu um erro:')
         }
     }
-    
+
 
     async static post(endpoint, payload){
         try{
@@ -33,7 +33,5 @@ class ApiService{
             console.log('Ocorreu um erro:', error);
         }
     }
-    
-}
 
-export default ExportApiService;
+}

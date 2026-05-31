@@ -11,7 +11,7 @@ class AppConfig:
         self.flask_host = "127.0.0.1"
         self.flask_port = 5000
 
-        self.app_title = "Neuro Audit - Developed by Spectra Core Division"
+        self.app_title = "Developed by Spectra Core Division"
         self.window_width = 1000
         self.window_height = 700
         self.background_color = "#0a0a0a"

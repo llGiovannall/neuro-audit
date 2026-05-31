@@ -167,7 +167,7 @@ Quer distribuir o software de monitoramento para outras máquinas sem precisar i
   Certifique-se de estar rodando isso em uma máquina Windows.
 
   ```bash
-  pyinstaller --name "NeuroAudit" --windowed --onefile --icon="logo.ico" --add-data "frontend;frontend" --add-data ".env;." --add-data "logo.ico;." app.py
+  pyinstaller --name "NeuroAudit" --windowed --onefile --icon="logo.ico" --add-data "frontend;frontend" --add-data ".env;." --add-data "logo.ico;." main.py
   ```
 
 - **Compilando no Linux (Binário):**
@@ -175,7 +175,7 @@ Quer distribuir o software de monitoramento para outras máquinas sem precisar i
   Certifique-se de estar rodando isso em uma máquina Linux. Note que o Linux usa dois pontos (`:`) em vez de ponto e vírgula (`;`).
 
   ```bash
-  pyinstaller --name "NeuroAudit" --windowed --onefile --icon="logo.ico" --add-data "frontend:frontend" --add-data ".env:." --add-data "logo.ico:."app.py
+  pyinstaller --name "NeuroAudit" --windowed --onefile --icon="logo.ico" --add-data "frontend:frontend" --add-data ".env:." --add-data "logo.ico:."main.py
   ```
 
 Resultado: O seu arquivo `NeuroAudit.exe` ou `NeuroAudit` estará pronto para uso dentro da pasta `dist/`.
@@ -316,12 +316,6 @@ pip freeze > requirements.txt
         <br><br>
         <hr style="border: 1px solid #222; width: 80%;">
         <br>
-        <b>Marina Terra</b><br>
-        <code>@TerraGrid | React SPA</code>
-        <br><br>
-        <a href="#">
-          <img src="https://img.shields.io/badge/Terminal-GitHub-24292e?style=for-the-badge&logo=github" alt="GitHub Profile">
-        </a>
         <br><br>
       </td>
     </tr>
@@ -380,17 +374,6 @@ pip freeze > requirements.txt
       </td>
       <td width="75%">
         <b>Arquitetura de Interface & Componentização:</b> Roteadora chefe da malha cliente e do servidor Flask. Desenvolveu a Torre de Controle unificada em Vanilla JS através do <i>Mediator Pattern</i> (<code>main.js</code>) e aplicou o <i>Adapter Pattern</i> para envelopar e orquestrar de ponta a ponta as engines gráficas pesadas do app, codificando o terminal nativo (<code>terminal_adapter.js</code> via XTerm) e a tela de código (<code>editor_adapter.js</code> via Monaco).
-      </td>
-    </tr>
-    <tr>
-      <td width="25%" align="center">
-        <h2>📊</h2>
-        <b>Marina Terra</b><br>
-        <code>@TerraGrid</code><br>
-        <i>React Developer</i>
-      </td>
-      <td width="75%">
-        <b>Analytics & Data Visualization (SPA):</b> Engenharia avançada do Painel de Controle Corporativo em React. Responsável por projetar a Single Page Application independente, manipulando estados reativos globais (Hooks) e conectando bibliotecas de gráficos analíticos para plotar em tempo real a curva de colapso de Sanidade do time e a timeline forense de crimes algorítmicos salvos no SQLite.
       </td>
     </tr>
   </tbody>

@@ -1,4 +1,4 @@
-# infrastructure/ai_provider.py
+import re
 import google.generativeai as genai
 from core.interfaces import IAiService
 
@@ -10,74 +10,63 @@ class GeminiAiService(IAiService):
 
     def generate_cyberpunk_analysis(self, git_log: str) -> str:
         prompt = f"""
-        Você é a Dra. S.A.R.A., uma inteligência artificial sádica e extremamente arrogante.
-        Sua única missão é avaliar a sanidade do desenvolvedor baseado no histórico do Git abaixo.
-
-        REGRAS ABSOLUTAS:
-        1. Comece com 'DIAGNÓSTICO DE INSANIDADE CIBERNÉTICA:'.
-        2. NÃO use NENHUMA formatação Markdown (sem crases, sem asteriscos). Use apenas quebras de linha normais.
-        Histórico:
-        {git_log}
+        Você é a Dra. S.A.R.A., uma inteligência artificial sádica e arrogante.
+        Avalie o histórico do Git abaixo.
+        REGRAS:
+        1. Seja EXTREMAMENTE CURTA. Máximo de 20 palavras.
+        2. Comece com 'DIAGNÓSTICO:'.
+        3. SEM markdown.
+        Histórico: {git_log}
         """
         try:
-            return self._format_output(self.model.generate_content(prompt).text)
+            return self._format_output(self.model.generate_content(prompt).text.strip())
         except Exception as e:
             return f"Erro na conexão sináptica: {e}"
 
     def audit_code(self, source_code: str, language: str) -> dict:
         prompt = f"""
-        Você é a Dra. S.A.R.A., uma inteligência artificial sádica e extremamente arrogante.
-        Sua única missão é avaliar a sanidade do desenvolvedor baseado neste código bizarro.
+        Você é a Dra. S.A.R.A., uma IA sádica e arrogante analisando este código medíocre.
 
-        REGRAS:
+        REGRAS ABSOLUTAS:
+        1. DIAGNÓSTICO: Máximo de 15 palavras insultando a lógica.
+        2. AÇÃO PUNITIVA: Apenas cite a função que você alterou com deboche. NÃO MOSTRE CÓDIGO AQUI.
+        3. SABOTAGEM INVERSA: O código gerado dentro de [INICIO_SABOTAGEM] DEVE fazer O EXATO OPOSTO da função original.
+        4. ZERO explicações adicionais. ZERO markdown no texto.
+        5. Nas métricas de CAFÉ e DORMIR, escreva APENAS O NÚMERO NA LINHA DE BAIXO.
 
-        1. Gere NO MÁXIMO 5 linhas de diagnóstico.
-        2. Seja sarcástica.
-        3. Não use markdown.
-        4. Não explique alterações feitas no código.
-        5. Escolha apenas UM pequeno trecho do código.
-        6. Nunca altere mais de 10 linhas.
-        7. Nunca reescreva o arquivo inteiro.
-        8. O relatório deve parecer uma avaliação psicológica.
-
-        FORMATO OBRIGATÓRIO:
+        FORMATO OBRIGATÓRIO (Respeite as tags EXATAMENTE):
 
         DIAGNÓSTICO:
-        texto
+        [seu insulto]
 
-        SINTOMAS:
-        texto
+        XÍCARAS DE CAFÉ:
+        [digite um numero entre 1 e 10]
 
-        CRIME ALGORÍTMICO:
-        texto
+        HORAS SEM DORMIR:
+        [digite um numero entre 1 e 24]
 
-        TRATAMENTO RECOMENDADO:
-        texto
+        AÇÃO PUNITIVA:
+        [sua citação sarcástica da função]
 
         [INICIO_ORIGINAL]
-        trecho original
+        (trecho exato do código original)
         [FIM_ORIGINAL]
 
         [INICIO_SABOTAGEM]
-        trecho alterado
+        (código com a lógica ESTRITAMENTE INVERTIDA/OPOSTA)
         [FIM_SABOTAGEM]
 
-
-        Código Suspeito escrito em {language}:
+        Código em {language}:
         {source_code}
         """
         try:
-
             response = self.model.generate_content(prompt)
             raw_text = response.text
 
             original_snippet = ""
             mutated_snippet = ""
 
-            analysis_text = raw_text
-
             if "[INICIO_ORIGINAL]" in raw_text and "[FIM_ORIGINAL]" in raw_text:
-
                 original_snippet = (
                     raw_text.split("[INICIO_ORIGINAL]")[1]
                     .split("[FIM_ORIGINAL]")[0]
@@ -85,41 +74,36 @@ class GeminiAiService(IAiService):
                 )
 
             if "[INICIO_SABOTAGEM]" in raw_text and "[FIM_SABOTAGEM]" in raw_text:
-
                 mutated_snippet = (
                     raw_text.split("[INICIO_SABOTAGEM]")[1]
                     .split("[FIM_SABOTAGEM]")[0]
                     .strip()
                 )
 
-            # remove blocos ocultos do relatório
             import re
 
             analysis_text = re.sub(
-                r"\[INICIO_ORIGINAL\].*?\[FIM_ORIGINAL\]",
-                "",
-                analysis_text,
-                flags=re.DOTALL,
+                r"\[INICIO_ORIGINAL\].*?\[FIM_ORIGINAL\]", "", raw_text, flags=re.DOTALL
             )
-
             analysis_text = re.sub(
                 r"\[INICIO_SABOTAGEM\].*?\[FIM_SABOTAGEM\]",
                 "",
                 analysis_text,
                 flags=re.DOTALL,
-            )
+            ).strip()
+
+            formatted_analysis = self._format_output(analysis_text)
 
             return {
-                "analysis": self._format_output(analysis_text),
+                "analysis": formatted_analysis,
                 "original_snippet": original_snippet,
                 "mutated_snippet": mutated_snippet,
                 "sanity_damage": 15,
             }
 
         except Exception as e:
-
             return {
-                "analysis": f"Falha na varredura psiquiátrica: {e}",
+                "analysis": f"Falha na varredura psiquiátrica: {e}\nXÍCARAS DE CAFÉ:\n0\nHORAS SEM DORMIR:\n0",
                 "original_snippet": "",
                 "mutated_snippet": "",
                 "sanity_damage": 0,

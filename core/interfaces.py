@@ -24,9 +24,7 @@ class IAiService(ABC):
 
 class IPdfService(ABC):
     @abstractmethod
-    def generate_report(
-        self, filepath: str, content: str, meta_info: Dict[str, str]
-    ) -> None:
+    def generate_report(self, filepath: str, json_data: list, meta_info: dict) -> None:
         pass
 
 

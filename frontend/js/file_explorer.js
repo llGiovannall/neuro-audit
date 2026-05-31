@@ -25,6 +25,7 @@ function pegarIcone(caminho) {
 }
 
 export class FileExplorer {
+
     static initCreateActions() {
         const btnNewFile = document.getElementById('btn-new-file');
         const btnNewFolder = document.getElementById('btn-new-folder');
@@ -35,11 +36,11 @@ export class FileExplorer {
 
     static triggerInlineInput(isDir) {
         const targetDir = window.app?.state?.lastActiveDirectory || window.app?.state?.currentWorkspace;
-
         if (!targetDir) {
-            window.app.terminal.printLine("\r\n[ERRO] Selecione um Workspace ou Pasta primeiro.");
+            window.app.terminal.printLine("\r\n[ERRO] Selecione um Workspace primeiro.");
             return;
         }
+
         let targetUl = document.querySelector(`ul[data-path="${targetDir.replace(/\\/g, '\\\\')}"]`);
         if (!targetUl) targetUl = document.getElementById('file-tree-container');
 
@@ -62,11 +63,8 @@ export class FileExplorer {
             if (processado) return;
             processado = true;
             const nome = input.value.trim();
-            if (nome) {
-                await this.createItem(targetDir, nome, isDir, targetUl);
-            } else {
-                li.remove();
-            }
+            if (nome) await this.createItem(targetDir, nome, isDir, targetUl);
+            else li.remove();
         };
 
         input.addEventListener('blur', finalizar);
@@ -91,7 +89,7 @@ export class FileExplorer {
             const data = await res.json();
 
             if (data.status === "sucesso") {
-                window.app.terminal.printLine(`\r\n[OK] ${nome} criado em ${basePath}.`);
+                window.app.terminal.printLine(`\r\n[OK] ${nome} criado.`);
                 await this.loadFiles(basePath, targetUl);
             } else {
                 window.app.terminal.printLine(`\r\n[ERRO] ${data.mensagem}`);
@@ -161,16 +159,45 @@ export class FileExplorer {
 
                 const li = document.createElement('li');
                 li.innerHTML = `
-                    <div class="flex items-center gap-2 px-2 py-1 text-[12px] hover:bg-brand-border cursor-pointer rounded-none text-gray-300 transition-colors select-none">
-                        ${iconHtml}
-                        <span class="truncate">${name}</span>
+                    <div class="group flex justify-between items-center px-2 py-1 text-[12px] hover:bg-brand-border cursor-pointer rounded-none text-gray-300 transition-colors select-none w-full">
+                        <div class="flex items-center gap-2 overflow-hidden">
+                            ${iconHtml}
+                            <span class="truncate">${name}</span>
+                        </div>
+                        <button class="btn-delete opacity-0 group-hover:opacity-100 text-gray-500 hover:text-red-500 transition-opacity p-0 m-0 leading-none" title="Excluir">
+                            <span class="material-symbols-outlined text-[14px]">delete</span>
+                        </button>
                     </div>
                     <ul data-path="${filePath}" class="pl-4 border-l border-brand-border ml-3 mt-1 hidden"></ul>
                 `;
 
-                const clickTarget = li.querySelector('div');
+                const clickTarget = li.children[0];
+                const btnDelete = li.querySelector('.btn-delete');
                 const subContainer = li.querySelector('ul');
                 const iconSpan = li.querySelector('.folder-icon');
+
+                btnDelete.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    if (confirm(`Aviso: Deseja eliminar '${name}' da sua unidade lógica? Esta ação é irreversível.`)) {
+                        try {
+                            const res = await fetch("http://127.0.0.1:5000/deletar-item", {
+                                method: 'DELETE',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ caminho: filePath })
+                            });
+                            if (res.ok) {
+                                li.remove();
+                                window.app.terminal.printLine(`\r\n[OK] Alvo neutralizado: ${name}`);
+                            } else {
+                                const data = await res.json();
+                                window.app.terminal.printLine(`\r\n[ERRO] ${data.mensagem}`);
+                            }
+                        } catch (err) {
+                            window.app.terminal.printLine(`\r\n[ERRO] Falha de comunicação S.O.`);
+                        }
+                        window.app.terminal.printPrompt();
+                    }
+                });
 
                 clickTarget.addEventListener('click', async (e) => {
                     e.stopPropagation();
@@ -189,6 +216,7 @@ export class FileExplorer {
                         }
                         return;
                     }
+
                     const isImage = name.match(/\.(png|jpe?g|webp|gif|svg|ico)$/i);
                     const editorDiv = document.getElementById('editor-container');
                     const imgViewerDiv = document.getElementById('image-viewer-container');
@@ -225,9 +253,8 @@ export class FileExplorer {
 
                         let conteudoLimpo = "";
                         if (typeof data === "string") conteudoLimpo = data;
-                        else if (data.conteudo) conteudoLimpo = typeof data.conteudo === 'string' ? data.conteudo : JSON.stringify(data.conteudo);
-                        else if (data.content) conteudoLimpo = typeof data.content === 'string' ? data.content : JSON.stringify(data.content);
-                        else if (data.texto) conteudoLimpo = typeof data.texto === 'string' ? data.texto : JSON.stringify(data.texto);
+                        else if (data.conteudo !== undefined) conteudoLimpo = typeof data.conteudo === 'string' ? data.conteudo : JSON.stringify(data.conteudo);
+                        else if (data.content !== undefined) conteudoLimpo = typeof data.content === 'string' ? data.content : JSON.stringify(data.content);
                         else conteudoLimpo = JSON.stringify(data, null, 2);
 
                         let lang = 'plaintext';

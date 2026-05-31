@@ -19,10 +19,10 @@ class ApiService{
             const Response = await fetch(endpoint, {
                 method: 'POST',
                 headers:{'Content-Type': 'application/json'},
-                BODY: JSON.stringify(payload)
+                body: JSON.stringify(payload)
             })
 
-            return await Response.JSON();
+            return await Response.json();
          } catch (error) {
             console.error(`Erro na requisição para ${endpoint}:`, error);
             throw new Error('Servidor offline ou erro de rede.');

@@ -12,36 +12,35 @@ export class AuditReport {
                 "audit-report-content"
             );
 
-        content.innerHTML = 
+        content.innerHTML = `
+        <div class="space-y-6">
 
-            <div class="space-y-6">
+            <div>
 
-                <div>
-
-                    <div class="text-yellow-400 text-xl font-bold mb-2">
-                        RELATÓRIO PSIQUIÁTRICO
-                    </div>
-
-                    <div class="text-green-300 whitespace-pre-wrap leading-7">
-                        ${reportText}
-                    </div>
-
+                <div class="text-yellow-400 text-xl font-bold mb-2">
+                    RELATÓRIO PSIQUIÁTRICO
                 </div>
 
-                <div class="border-t border-green-500 pt-4">
-
-                    <span class="text-green-500">
-                        SANIDADE REMANESCENTE:
-                    </span>
-
-                    <span class="text-white ml-2">
-                        ${sanity}%
-                    </span>
-
+                <div class="text-green-300 whitespace-pre-wrap leading-7">
+                    ${reportText}
                 </div>
 
             </div>
-        ;
+
+            <div class="border-t border-green-500 pt-4">
+
+                <span class="text-green-500">
+                    SANIDADE REMANESCENTE:
+                </span>
+
+                <span class="text-white ml-2">
+                    ${sanity}%
+                </span>
+
+            </div>
+
+        </div>
+        `;
 
         modal.classList.remove("hidden");
     }

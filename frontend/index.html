@@ -56,7 +56,7 @@
         <div class="flex items-center gap-4 w-[260px]">
             <div class="flex items-center gap-2">
                 <div class="w-8 h-8 bg-brand-activity flex items-center justify-center border border-brand-border">
-                    <span class="material-symbols-outlined text-white text-[20px]">memory</span>
+                    <span ><img src="./assets/logo.webp" style="height: 26px; width: 26px;"></img></span>
                 </div>
                 <div>
                     <h1 class="text-[14px] font-bold tracking-tighter text-white leading-none">NEURO AUDIT_v1.0</h1>
@@ -65,7 +65,7 @@
             </div>
         </div>
         <div class="flex-1 flex justify-center items-center">
-            <span class="text-[12px] text-gray-300 uppercase tracking-widest">WORKSPACE</span>
+            <span class="text-[12px] text-gray-300 uppercase tracking-widest">WORKSPACE 42</span>
         </div>
         <div class="flex items-center gap-6 text-[13px] text-white">
             <div class="flex items-center gap-2">
@@ -107,7 +107,7 @@
 
             <div class="py-2 px-4 border-b border-brand-border flex justify-between items-center bg-[#111]">
                 <span id="root-folder-name" class="text-[11px] text-gray-300 uppercase tracking-widest font-bold truncate max-w-[120px]">
-                    EXPLORER
+                    EXPLORER 4.2
                 </span>
 
                 <div class="flex items-center gap-1">
@@ -127,7 +127,6 @@
                 <ul id="file-tree-container" class="px-2"></ul>
             </nav>
         </aside>
-        </aside>
 
         <div class="flex-1 flex flex-col relative bg-brand-bg rounded-none min-w-0">
             <main class="flex-1 flex flex-col relative z-0 overflow-hidden rounded-none">
@@ -136,6 +135,36 @@
                         </div>
 
                     <div id="editor-container" class="flex-1 bg-brand-bg overflow-hidden relative z-0"></div>
+                    <div id="audit-report-modal" class="hidden fixed inset-0 bg-black/95 z-[9999] overflow-auto">
+
+                        <div class="max-w-4xl mx-auto mt-10">
+
+                            <div class="bg-[#0a0a0a] border border-green-500 p-8">
+
+                                <div class="flex justify-between items-center mb-6">
+
+                                    <h1 class="text-red-500 text-3xl font-bold">
+                                        NEURO AUDIT REPORT
+                                    </h1>
+
+                                    <button
+                                        id="btn-close-report"
+                                        class="border border-green-500 px-4 py-2 text-green-500">
+
+                                        FECHAR
+                                    </button>
+
+                                </div>
+
+                                <div
+                                    id="audit-report-content">
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
 
                     <div id="image-viewer-container" class="hidden absolute top-8 left-0 right-0 bottom-0 z-20 bg-brand-bg flex items-center justify-center p-8">
                         <img id="image-viewer-img" src="" class="max-w-full max-h-full object-contain border border-brand-border shadow-[0_0_15px_rgba(57,255,20,0.1)]">
@@ -147,7 +176,7 @@
 
     <section class="h-[240px] bg-brand-sidebar flex flex-col relative border-t border-brand-border rounded-none w-full shrink-0">
         <div class="h-8 border-b border-brand-border flex items-center px-4 justify-between bg-brand-activity">
-            <span class="text-[11px] text-gray-400 uppercase tracking-widest font-bold">CONSOLE</span>
+            <span class="text-[11px] text-gray-400 uppercase tracking-widest font-bold">CONSOLE Aplha_0.42</span>
         </div>
 
         <div class="flex-1 overflow-hidden relative rounded-none flex flex-col">

@@ -5,6 +5,7 @@ from flask_cors import CORS
 from core.state import WorkspaceSession
 from core.use_cases import ExecuteTerminalCommandUseCase, FileManagementUseCase
 from core.interfaces import IWindowDialogService, IPdfService, IGitService
+from core.interfaces import IAiService
 
 
 def create_app(
@@ -15,6 +16,7 @@ def create_app(
     cmd_use_case: ExecuteTerminalCommandUseCase,
     file_use_case: FileManagementUseCase,
     git_service: IGitService,
+    ai_service: IAiService,
 ) -> Flask:
 
     app = Flask(__name__, static_folder=static_folder, static_url_path="")
@@ -56,10 +58,18 @@ def create_app(
 
     @app.route("/auditar-codigo", methods=["POST"])
     def auditar_codigo():
-        codigo_fonte = request.json.get("codigo", "")
-        linguagem = request.json.get("linguagem", "desconhecida")
-        analise = cmd_use_case.audit_single_file(codigo_fonte, linguagem)
-        return jsonify({"analysis": analise})
+
+        dados = request.get_json()
+
+        codigo = dados.get("codigo", "")
+        arquivo = dados.get("arquivo", "")
+
+        extensao = arquivo.split(".")[-1]
+
+        resultado = ai_service.audit_code(codigo, extensao)
+        print("AUDITORIA EXECUTADA")
+
+        return jsonify(resultado)
 
     @app.route("/listar-arquivos", methods=["POST", "GET"])
     def listar_arquivos():

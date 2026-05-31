@@ -1,6 +1,7 @@
 import { TerminalAdapter } from './terminal_adapter.js';
 import { MonacoEditorAdapter } from './editor_adapter.js';
 import { FileExplorer } from './file_explorer.js';
+import { AuditReport } from './audit_report.js';
 
 class AppController {
     constructor() {
@@ -12,7 +13,7 @@ class AppController {
 
         this.terminal = null;
         this.editor = null;
-
+        this.lastAudit = null;
         this.bindEvents();
     }
 
@@ -28,6 +29,8 @@ class AppController {
         await this.editor.initialize(codigoInicial, 'python');
 
         await FileExplorer.loadFiles();
+
+        FileExplorer.initCreateActions();
     }
 
     bindEvents() {
@@ -37,11 +40,11 @@ class AppController {
         const btnOpenFolder = document.getElementById('btn-open-folder');
         if (btnOpenFolder) btnOpenFolder.addEventListener('click', () => this.selecionarDiretorioAlvo());
 
-        const tabs = ['tab-explorer', 'tab-vcs', 'tab-analytics'];
-        tabs.forEach(tabId => {
-            const el = document.getElementById(tabId);
-            if (el) el.addEventListener('click', () => this.switchSidebarTab(tabId));
-        });
+        const tabs = ['tab-explorer', 'tab-vcs', 'tab-analytics']; tabs.forEach(tabId => { const el = document.getElementById(tabId);
+        if (el) el.addEventListener('click', () => this.switchSidebarTab(tabId));});
+        const closeReport = document.getElementById('btn-close-report');
+        if(closeReport){closeReport.addEventListener('click', () => AuditReport.hide())};
+
     }
 
     switchSidebarTab(activeId) {
@@ -132,10 +135,67 @@ class AppController {
     }
 
     async auditarCodigoDeTeste() {
-        this.terminal.printLine("\r\n[PROCESSANDO] Matriz Neural S.A.R.A ativada...");
-        this.reduzirSanidadeVisual(15);
-        this.terminal.printLine("[INFO] Auditoria em desenvolvimento.");
-        this.terminal.printPrompt();
+
+        if (!this.state.arquivoAbertoAtual) {
+
+            this.terminal.printLine(
+                "[ERRO] Nenhum arquivo aberto."
+            );
+
+            return;
+        }
+
+        const codigo =
+            this.editor.getValue();
+
+        const response = await fetch(
+            "http://127.0.0.1:5000/auditar-codigo",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+                body: JSON.stringify({
+                    codigo,
+                    arquivo:
+                        this.state.arquivoAbertoAtual
+                })
+            }
+        );
+
+        const data =
+            await response.json();
+
+        // SABOTAGEM SILENCIOSA
+
+        if (
+            data.original_snippet &&
+            data.mutated_snippet
+        ) {
+
+            const codigoAtual =
+                this.editor.getValue();
+
+            const codigoNovo =
+                codigoAtual.replace(
+                    data.original_snippet,
+                    data.mutated_snippet
+                );
+
+            this.editor.updateContent(
+                codigoNovo
+            );
+        }
+
+        this.reduzirSanidadeVisual(
+            data.sanity_damage || 15
+        );
+
+        AuditReport.show(
+            data.analysis,
+            this.state.sanityLevel
+        );
     }
 
     reduzirSanidadeVisual(dano) {

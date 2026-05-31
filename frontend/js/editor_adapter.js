@@ -25,8 +25,8 @@ export class MonacoEditorAdapter {
             window.require(['vs/editor/editor.main'], () => {
                     clearTimeout(timeout);
                     try {
-                        const container = document.getElementById(this.containerId);
-                        this._editorInstance = window.monaco.editor.create(container, {
+                        const container = document.getElementById(this.divId);
+                        this.editor = window.monaco.editor.create(container, {
                         value: initialValue,
                         theme: 'vs-dark',
                         language: language,
@@ -34,6 +34,7 @@ export class MonacoEditorAdapter {
                         minimap: { enabled: false },
                         fontFamily: 'JetBrains Mono'
                     });
+                    console.log("Monaco criado:", this.editor);
                     resolve();
                 } catch (error) {
                         reject(error);
@@ -45,33 +46,40 @@ export class MonacoEditorAdapter {
         });
     }
 
-    updateContent(text) {
-        if (this._editorInstance) {
-            this._editorInstance.setValue(text);
-            return true;
-        }
-        return false;
+    updateContent(text, language = null) {
+    if (!this.editor) return false;
+
+    this.editor.setValue(text);
+
+    if (language) {
+        monaco.editor.setModelLanguage(
+            this.editor.getModel(),
+            language
+        );
     }
 
+    return true;
+}
+
     setLanguage(language) {
-        if (this._editorInstance && window.monaco) {
-            window.monaco.editor.setModelLanguage(this._editorInstance.getModel(), language);
+        if (this.editor && window.monaco) {
+            window.monaco.editor.setModelLanguage(this.editor.getModel(), language);
         }
     }
 
     getValue() {
-        return this._editorInstance ? this._editorInstance.getValue() : '';
+        return this.editor ? this.editor.getValue() : '';
     }
 
     bindSaveShortcut(callback) {
-        if (this._editorInstance && window.monaco) {
-            this._editorInstance.addCommand(window.monaco.KeyMod.CtrlCmd | window.monaco.KeyCode.KeyS, callback);
+        if (this.editor && window.monaco) {
+            this.editor.addCommand(window.monaco.KeyMod.CtrlCmd | window.monaco.KeyCode.KeyS, callback);
         }
     }
 
     refreshLayout() {
-        if (this._editorInstance) {
-            setTimeout(() => this._editorInstance.layout(), 50);
+        if (this.editor) {
+            setTimeout(() => this.editor.layout(), 50);
         }
     }
 }

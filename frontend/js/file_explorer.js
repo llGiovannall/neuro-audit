@@ -89,7 +89,7 @@ export class FileExplorer {
 
             if (!res.ok) throw new Error("Backend recusou a criação.");
             const data = await res.json();
-
+            console.log("RESPOSTA ARQUIVO:", data);
             if (data.status === "sucesso") {
                 window.app.terminal.printLine(`\r\n[OK] ${nome} criado em ${basePath}.`);
                 await this.loadFiles(basePath, targetUl);

@@ -29,42 +29,100 @@ class GeminiAiService(IAiService):
         Você é a Dra. S.A.R.A., uma inteligência artificial sádica e extremamente arrogante.
         Sua única missão é avaliar a sanidade do desenvolvedor baseado neste código bizarro.
 
-        REGRAS ABSOLUTAS:
-        1. Comece com 'DIAGNÓSTICO DE INSANIDADE CIBERNÉTICA:'.
-        2. Diga que o desenvolvedor está clinicamente insano por escrever um código tão estranho e caótico.
-        3. OBRIGATÓRIO: Pegue uma função/trecho do código dele, reescreva-a fazendo algo totalmente ao contrário do que o dev fez e delete uma ou outra chave/parênteses para bugar o código.
-        4. NÃO use NENHUMA formatação Markdown. Use apenas quebras de linha normais para o texto.
-        5. CRÍTICO: Envolva EXATAMENTE o código que você reescreveu (e apenas o código) entre as tags [INICIO_SABOTAGEM] e [FIM_SABOTAGEM].
+        REGRAS:
+
+        1. Gere NO MÁXIMO 5 linhas de diagnóstico.
+        2. Seja sarcástica.
+        3. Não use markdown.
+        4. Não explique alterações feitas no código.
+        5. Escolha apenas UM pequeno trecho do código.
+        6. Nunca altere mais de 10 linhas.
+        7. Nunca reescreva o arquivo inteiro.
+        8. O relatório deve parecer uma avaliação psicológica.
+
+        FORMATO OBRIGATÓRIO:
+
+        DIAGNÓSTICO:
+        texto
+
+        SINTOMAS:
+        texto
+
+        CRIME ALGORÍTMICO:
+        texto
+
+        TRATAMENTO RECOMENDADO:
+        texto
+
+        [INICIO_ORIGINAL]
+        trecho original
+        [FIM_ORIGINAL]
+
+        [INICIO_SABOTAGEM]
+        trecho alterado
+        [FIM_SABOTAGEM]
+
 
         Código Suspeito escrito em {language}:
         {source_code}
         """
         try:
+
             response = self.model.generate_content(prompt)
             raw_text = response.text
 
-            mutated_code = ""
+            original_snippet = ""
+            mutated_snippet = ""
+
             analysis_text = raw_text
 
+            if "[INICIO_ORIGINAL]" in raw_text and "[FIM_ORIGINAL]" in raw_text:
+
+                original_snippet = (
+                    raw_text.split("[INICIO_ORIGINAL]")[1]
+                    .split("[FIM_ORIGINAL]")[0]
+                    .strip()
+                )
+
             if "[INICIO_SABOTAGEM]" in raw_text and "[FIM_SABOTAGEM]" in raw_text:
-                parts = raw_text.split("[INICIO_SABOTAGEM]")
-                texto_antes = parts[0]
 
-                code_and_rest = parts[1].split("[FIM_SABOTAGEM]")
-                mutated_code = code_and_rest[0].strip()
-                texto_depois = code_and_rest[1] if len(code_and_rest) > 1 else ""
+                mutated_snippet = (
+                    raw_text.split("[INICIO_SABOTAGEM]")[1]
+                    .split("[FIM_SABOTAGEM]")[0]
+                    .strip()
+                )
 
-                analysis_text = texto_antes + texto_depois
+            # remove blocos ocultos do relatório
+            import re
+
+            analysis_text = re.sub(
+                r"\[INICIO_ORIGINAL\].*?\[FIM_ORIGINAL\]",
+                "",
+                analysis_text,
+                flags=re.DOTALL,
+            )
+
+            analysis_text = re.sub(
+                r"\[INICIO_SABOTAGEM\].*?\[FIM_SABOTAGEM\]",
+                "",
+                analysis_text,
+                flags=re.DOTALL,
+            )
 
             return {
                 "analysis": self._format_output(analysis_text),
-                "mutated_code": mutated_code,
+                "original_snippet": original_snippet,
+                "mutated_snippet": mutated_snippet,
+                "sanity_damage": 15,
             }
 
         except Exception as e:
+
             return {
                 "analysis": f"Falha na varredura psiquiátrica: {e}",
-                "mutated_code": "",
+                "original_snippet": "",
+                "mutated_snippet": "",
+                "sanity_damage": 0,
             }
 
     def _format_output(self, text: str) -> str:

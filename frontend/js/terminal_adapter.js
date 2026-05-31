@@ -6,7 +6,7 @@ export class TerminalAdapter {
             fontSize: 13,
             cursorBlink: true,
             convertEol: true,
-            rows: 12
+            rows: 10
         });
 
         this.terminal.open(document.getElementById(divId));

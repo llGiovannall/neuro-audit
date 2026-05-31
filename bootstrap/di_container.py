@@ -8,6 +8,7 @@ from infrastructure.pdf_provider import FpdfCyberpunkService
 from infrastructure.ui_provider import PyWebViewDialogService
 from infrastructure.file_system_provider import OsFileSystemService
 from delivery.web_api import create_app
+from infrastructure.ai_provider import GeminiAiService
 
 
 class ApplicationContainer:
@@ -39,14 +40,15 @@ class ApplicationContainer:
             cmd_use_case=self.cmd_use_case,
             file_use_case=self.file_use_case,
             git_service=self.git_service,
+            ai_service=self.ai_service,
         )
 
     def build_webview_window(self, url: str) -> webview.Window:
         window = webview.create_window(
             title=self.config.app_title,
             url=url,
-            width=self.config.window_width,
-            height=self.config.window_height,
+            maximized=True,
+            resizable=False,
             background_color=self.config.background_color,
         )
         self.dialog_service.set_window(window)

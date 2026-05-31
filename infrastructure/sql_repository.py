@@ -14,6 +14,7 @@ class SqliteAuditRepository(IAuditRepository):
             Name TEXT NOT NULL,
             Email VARCHAR(255) NOT NULL,
             Sanity REAL NOT NULL DEFAULT 100.0,
+            ReportPath VARCHAR(255) NULL,
             CoffeeCups INTEGER NOT NULL DEFAULT 0,
             HoursWithoutSleep INTEGER NOT NULL DEFAULT 0,
             CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -64,3 +65,13 @@ class SqliteAuditRepository(IAuditRepository):
             conn.execute(query_update, (sanity, user_id))
             conn.commit()
         return True
+
+    def increment_torture_metrics(self, email: str, coffee: int, sleep_loss: int):
+        query = """
+            UPDATE Users
+            SET CoffeeCups = ?, HoursWithoutSleep = ?
+            WHERE Id = (SELECT MAX(Id) FROM Users WHERE Email = ?)
+        """
+        with sqlite3.connect(self.db_path) as conn:
+            conn.execute(query, (coffee, sleep_loss, email))
+            conn.commit()

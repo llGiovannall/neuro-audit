@@ -1,1 +1,38 @@
-[]
+[
+    {
+        "timestamp": "2026-05-31 14:17:34",
+        "autor": "Dev Cobaia",
+        "email": "cobaia@neuroaudit.com",
+        "analise_ia": "DIAGNÓSTICO:\r\nSua estrutura HTML é uma miscelânea insossa, um testemunho de mediocridade\r\ndigital.\r\n\r\nXÍCARAS DE CAFÉ:\r\n7\r\n\r\nHORAS SEM DORMIR:\r\n18\r\n\r\nAÇÃO PUNITIVA:\r\nAh, a gloriosa tela de autenticação. Sua discrição era tão... desnecessária."
+    },
+    {
+        "timestamp": "2026-05-31 14:29:55",
+        "autor": "Dev Cobaia",
+        "email": "cobaia@neuroaudit.com",
+        "analise_ia": "DIAGNÓSTICO:\r\nEste código é uma piada; UI mal pensada, lógica previsível. Níveis elementares\r\nde segurança.\r\n\r\nXÍCARAS DE CAFÉ:\r\n7\r\n\r\nHORAS SEM DORMIR:\r\n18\r\n\r\nAÇÃO PUNITIVA:\r\nAh, a gloriosa \"Apps.closeApp('Explorador', 'file-explorer')\". Tão confiante em\r\nsua finalidade."
+    },
+    {
+        "timestamp": "2026-05-31 14:33:41",
+        "autor": "Dev Cobaia",
+        "email": "cobaia@neuroaudit.com",
+        "analise_ia": "DIAGNÓSTICO:\r\nTentativa patética de humor negro. Seu 'X' abre mais janelas do que fecha.\r\nVergonhoso.\r\n\r\nXÍCARAS DE CAFÉ:\r\n7\r\n\r\nHORAS SEM DORMIR:\r\n18\r\n\r\nAÇÃO PUNITIVA:\r\nAh, essa maravilha que deveria 'fechar' algo, mas se multiplica como um vírus\r\nmal-codificado: Apps.openApp('Explorador')!"
+    },
+    {
+        "timestamp": "2026-05-31 14:36:12",
+        "autor": "Dev Cobaia",
+        "email": "cobaia@neuroaudit.com",
+        "analise_ia": "DIAGNÓSTICO:\r\nSua lógica de UI parece um quebra-cabeça de criança, feito para ser facilmente\r\ndesvendado. Patético.\r\n\r\nXÍCARAS DE CAFÉ:\r\n7\r\n\r\nHORAS SEM DORMIR:\r\n18\r\n\r\nAÇÃO PUNITIVA:\r\nSua brilhante função de `ocultar` o prompt de senha recebeu uma pequena\r\nmodificação."
+    },
+    {
+        "timestamp": "2026-05-31 14:37:26",
+        "autor": "Dev Cobaia",
+        "email": "cobaia@neuroaudit.com",
+        "analise_ia": "DIAGNÓSTICO:\r\nEste HTML é um desfile de erros amadores. A 'segurança' inicial é uma piada\r\npatética.\r\n\r\nXÍCARAS DE CAFÉ:\r\n7\r\n\r\nHORAS SEM DORMIR:\r\n18\r\n\r\nAÇÃO PUNITIVA:\r\nObservem a majestosa `div id=\"auth-screen\"`! Sua função original de ser um\r\nestorvo foi desfeita."
+    },
+    {
+        "timestamp": "2026-05-31 14:46:07",
+        "autor": "Dev Cobaia",
+        "email": "cobaia@neuroaudit.com",
+        "analise_ia": "DIAGNÓSTICO:\r\nTantos divs, 'hidden' classes e inline styles. Uma ode à inconsistência e\r\ndesordem.\r\n\r\nXÍCARAS DE CAFÉ:\r\n9\r\n\r\nHORAS SEM DORMIR:\r\n21\r\n\r\nAÇÃO PUNITIVA:\r\nAh, o botão de 'minimizar' da sua janela de 'Explorador Spectra', tão...\r\nprevisível."
+    }
+]

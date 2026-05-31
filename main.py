@@ -21,7 +21,7 @@ def main() -> None:
     local_url = f"http://{config.flask_host}:{config.flask_port}"
     _window = container.build_webview_window(url=local_url)
 
-    webview.start(debug=True, icon=config.logo_path)
+    webview.start(icon=config.logo_path)
 
 
 if __name__ == "__main__":
